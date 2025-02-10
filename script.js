@@ -19,6 +19,7 @@ let colorCount = 4;
 let time = 0;
 let timerInterval;
 let currentLevel = 1;
+let timerStarted = false; // Flag to track if the timer has started
 
 // Switch to the game page when the Start Button is clicked
 startButton.addEventListener("click", () => {
@@ -34,25 +35,25 @@ function initializeGame() {
   colors = generateColors(colorCount);
   grid = generateGrid(gridSize, colors);
   time = 0;
+  timerStarted = false; // Reset the timer started flag
   clearInterval(timerInterval);
-  timerInterval = setInterval(updateTimer, 1000); // Start the timer
+  timerElement.textContent = "0s"; // Reset timer display
   renderGrid();
   levelElement.textContent = currentLevel;
-  timerElement.textContent = "0s"; // Reset timer display
 }
 
 // Generate random colors
 function generateColors(count) {
-    const baseHue = Math.floor(Math.random() * 360); // Random starting hue
-    const colorList = [];
-  
-    for (let i = 0; i < count; i++) {
-      const hue = (baseHue + i * (360 / count)) % 360; // Evenly spaced hues
-      colorList.push(`hsl(${hue}, 60%, 80%)`); // Light pastel colors
-    }
-  
-    return colorList;
+  const baseHue = Math.floor(Math.random() * 360); // Random starting hue
+  const colorList = [];
+
+  for (let i = 0; i < count; i++) {
+    const hue = (baseHue + i * (360 / count)) % 360; // Evenly spaced hues
+    colorList.push(`hsl(${hue}, 60%, 80%)`); // Light pastel colors
   }
+
+  return colorList;
+}
 
 // Generate a grid with random colors
 function generateGrid(size, colors) {
@@ -84,6 +85,11 @@ function renderGrid() {
 
 // Change the color of a cell
 function changeColor(i, j) {
+  if (!timerStarted) {
+    timerStarted = true;
+    timerInterval = setInterval(updateTimer, 1000); // Start the timer on first click
+  }
+
   const currentColor = grid[i][j];
   const currentIndex = colors.indexOf(currentColor);
   const nextIndex = (currentIndex + 1) % colors.length;
